@@ -78,6 +78,7 @@ public class Main {
 			@Override
 			public void mouseUp(MouseEvent e) {
 				File folder2 = Giz.ChooseFolder(shlRosalinaScreenshotTool);
+				System.out.println(folder2.getName());
 				if (folder2 != null) {
 					folder = folder2;
 					String[] items = Giz.GetFileList(folder).toArray(new String[0]);
