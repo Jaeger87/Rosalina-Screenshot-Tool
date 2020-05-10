@@ -24,6 +24,7 @@ public class Main {
 	File folder;
 	Image current;
 	ImageIO saveImage;
+	String currentFileDate;
 	
 	protected Shell shlRosalinaScreenshotTool;
 
@@ -94,7 +95,7 @@ public class Main {
 			@Override
 			public void mouseUp(MouseEvent e) {
 				if(current!=null){
-				Giz.SaveFile(shlRosalinaScreenshotTool, current);
+				Giz.SaveFile(shlRosalinaScreenshotTool, current, currentFileDate);
 				}
 			}
 		});
@@ -106,6 +107,7 @@ public class Main {
 			public void widgetSelected(SelectionEvent e) {
 				if(folder!=null && list.getSelection().length>0){
 				current = Giz.OpenScreenshot(folder, list.getSelection());
+				currentFileDate = list.getSelection()[0].substring(0, 16);
 				canvas.setBackgroundImage(current);
 				
 				}

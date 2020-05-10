@@ -1,7 +1,9 @@
 import java.io.File;
 import java.io.FilenameFilter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -28,7 +30,7 @@ public class Giz {
 		}
 	}
 
-	static void SaveFile(Shell shell, Image img) {
+	static void SaveFile(Shell shell, Image img, String date) {
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		String[] ext = { "*.png" };
 		dialog.setFilterExtensions(ext);
@@ -41,9 +43,24 @@ public class Giz {
 		File savefile = new File(savefile1);
 		ImageLoader saver = new ImageLoader();
 		saver.data = new ImageData[] { img.getImageData() };
-		saver.save(savefile.getAbsolutePath(), SWT.IMAGE_PNG);
-	}
+		
 
+		
+		saver.save(savefile.getAbsolutePath(), SWT.IMAGE_PNG);
+		savefile = new File(savefile1);
+		
+		
+		try {
+		    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
+		    Date parsedDate = dateFormat.parse(date);
+		    savefile.setLastModified(parsedDate.getTime());
+		} catch(Exception e) { //this generic but you can control another types of exception
+		    System.out.println(e.getMessage());
+		}
+		
+	}
+  
+	//2020-04-01_07-30-26.573_top
 	static List<String> GetFileList(File folder) {
 		List<File> fileList;
 		List<String> numberList = new ArrayList<String>();
@@ -51,7 +68,7 @@ public class Giz {
 		fileList = Arrays.asList(folder.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File arg0, String filename) {
-				String Regex = "(top_)(\\d\\d\\d\\d)(\\.bmp)";
+				String Regex = "(\\d\\d\\d\\d-\\d\\d-\\d\\d_\\d\\d-\\d\\d-\\d\\d\\.\\d\\d\\d)(_top)(\\.bmp)";
 				return filename.matches(Regex);
 			}
 		}));
@@ -61,13 +78,13 @@ public class Giz {
 
 		if (fileList != null) {
 			fileList.forEach(listItem -> {
-				String filePathString = folder + "\\top_" + listItem.getName().toString().substring(4, 8) + ".bmp";
+				String filePathString = folder  + "\\" + listItem.getName().toString().substring(0, 23) + "_top.bmp";
 				System.out.println(filePathString);
-				String filePathString2 = folder + "\\bot_" + listItem.getName().toString().substring(4, 8) + ".bmp";
+				String filePathString2 = folder + "\\" + listItem.getName().toString().substring(0, 23) + "_bot.bmp";
 				File f = new File(filePathString);
 				File f2 = new File(filePathString2);
 				if ((f.exists() && f2.exists()) && (!f.isDirectory() && !f2.isDirectory())) {
-					numberList.add(listItem.getName().toString().substring(4, 8));
+					numberList.add(listItem.getName());
 				}
 			});
 		}
@@ -75,8 +92,8 @@ public class Giz {
 	}
 
 	static Image OpenScreenshot(File folder, String[] strings) {
-		String filePathString = folder + "\\top_" + strings[0] + ".bmp";
-		String filePathString2 = folder + "\\bot_" + strings[0] + ".bmp";
+		String filePathString = folder + "\\" + strings[0];
+		String filePathString2 = folder + "\\" + strings[0].replace("top", "bot");
 		Image top = new Image(Display.getDefault(), filePathString);
 		Image bot = new Image(Display.getDefault(), filePathString2);
 		Image img = new Image(Display.getDefault(), 400, 480);
